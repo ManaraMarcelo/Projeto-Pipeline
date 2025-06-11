@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8081 # Porta que o Service expõe internamente
+      targetPort: 8000 # Porta do contêiner para onde o tráfego será direcionado
+      nodePort: 30001 # <--- Porta NodePort específica para acesso externo
+  type: NodePort # <--- Use NodePort para garantir acesso local
