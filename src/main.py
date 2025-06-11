@@ -65,3 +65,6 @@ async def lookalike():
     ]
     random_lookalike = random.choice(lookalike_images)
     return {"lookalike_image_url": random_lookalike}
+
+from fastapi.staticfiles import StaticFiles
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
