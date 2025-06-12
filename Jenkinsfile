@@ -56,5 +56,6 @@ pipeline {
     }
     triggers {
         githubPush()
+        // teste2 do push...
     }
 }
