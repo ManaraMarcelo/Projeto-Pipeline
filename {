@@ -1,0 +1,98 @@
+Script started on 2025-06-13 10:59:37-03:00 [TERM="xterm-256color" TTY="/dev/pts/5" COLUMNS="143" LINES="13"]
+[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ clear
+[?2004l[H[2J[3J[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ git ad ..[K[K[Kd .
+[?2004l[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ git add .[4Pcleargit push -u origin maincommit -m "fixing the Jenkinsfile_03"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"T"[1P"[K[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[Kgit cher[Kckou[K[K[K[K[K[K[Kstatus
+[?2004lOn branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	[32mmodified:   Jenkinsfile[m
+	[32mnew file:   {[m
+
+[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ git ad  [K[K[Kd[Kdd .
+[?2004l[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ git add .status[1Padd .[4Pcleargit push -u origin maincommit -m "fixing the Jenkinsfile_03"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"[1P"T"r"i"v"y" "e"r"r"o"r"
+[?2004l[main 7b630b5] Trivy error
+ 2 files changed, 5 insertions(+), 40 deletions(-)
+ create mode 100644 {
+[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ git commit -m "Trivy error"[Kgit commit -m "Trivy error"add .[Kstatus[1Padd .[4Pcleargit push -u origin main
+[?2004lEnumerating objects: 6, done.
+Counting objects:  16% (1/6)Counting objects:  33% (2/6)Counting objects:  50% (3/6)Counting objects:  66% (4/6)Counting objects:  83% (5/6)Counting objects: 100% (6/6)Counting objects: 100% (6/6), done.
+Delta compression using up to 8 threads
+Compressing objects:  33% (1/3)Compressing objects:  66% (2/3)Compressing objects: 100% (3/3)Compressing objects: 100% (3/3), done.
+Writing objects:  25% (1/4)Writing objects:  50% (2/4)Writing objects:  75% (3/4)Writing objects: 100% (4/4)Writing objects: 100% (4/4), 522 bytes | 522.00 KiB/s, done.
+Total 4 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas:   0% (0/1)[Kremote: Resolving deltas: 100% (1/1)[Kremote: Resolving deltas: 100% (1/1), completed with 1 local object.[K
+To github.com:ManaraMarcelo/Projeto-Pipeline.git
+   da9f8f4..7b630b5  main -> main
+branch 'main' set up to track 'origin/main'.
+[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ juc[K[K[Kkubects[Kl getr [K[K[K ser[K[K[K[Kt service[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Khistory a[KA[K\[K| grep keu[K[Kubectl
+[?2004l 1184  curl -LO https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/[01;31m[Kkubectl[m[K
+ 1187  curl -LO https://dl.k8s.io/release/v1.33.0/bin/linux/amd64/[01;31m[Kkubectl[m[K
+ 1188  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/[01;31m[Kkubectl[m[K.sha256"
+ 1189  echo "$(cat [01;31m[Kkubectl[m[K.sha256)  [01;31m[Kkubectl[m[K" | sha256sum --check
+ 1190  chmod +x ./[01;31m[Kkubectl[m[K
+ 1191  echo "$(cat [01;31m[Kkubectl[m[K.sha256)  [01;31m[Kkubectl[m[K" | sha256sum --check
+ 1192  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/[01;31m[Kkubectl[m[K"
+ 1193  chmod +x ./[01;31m[Kkubectl[m[K
+ 1194  echo "$(cat [01;31m[Kkubectl[m[K.sha256)  [01;31m[Kkubectl[m[K" | sha256sum --check
+ 1195  sudo install -o root -g root -m 0755 [01;31m[Kkubectl[m[K /usr/local/bin/[01;31m[Kkubectl[m[K
+ 1196  [01;31m[Kkubectl[m[K version --client
+ 1197  [01;31m[Kkubectl[m[K version --client --output=yaml
+ 1198  [01;31m[Kkubectl[m[K version --client
+ 1202  [01;31m[Kkubectl[m[K version --client --output=yaml
+ 1229  [01;31m[Kkubectl[m[K version --client
+ 1240  [01;31m[Kkubectl[m[K
+ 1248  [01;31m[Kkubectl[m[K
+ 1250  [01;31m[Kkubectl[m[K get notes
+ 1251  [01;31m[Kkubectl[m[K get nodes
+ 1252  [01;31m[Kkubectl[m[K get deployments
+ 1254  [01;31m[Kkubectl[m[K run nginx --image=nginx
+ 1255  [01;31m[Kkubectl[m[K get pods
+ 1256  [01;31m[Kkubectl[m[K describe pod nginx
+ 1266  [01;31m[Kkubectl[m[K apply -f pod.yml 
+ 1267  [01;31m[Kkubectl[m[K get pod
+ 1268  [01;31m[Kkubectl[m[K delete pod nginx
+ 1269  [01;31m[Kkubectl[m[K get pod
+ 1271  [01;31m[Kkubectl[m[K apply -f pod.yaml 
+ 1272  [01;31m[Kkubectl[m[K describe nginx
+ 1273  [01;31m[Kkubectl[m[K describe pod nginx
+ 1308  [01;31m[Kkubectl[m[K 
+ 1312  [01;31m[Kkubectl[m[K get pods
+ 1329  [01;31m[Kkubectl[m[K get pods
+ 1501  which [01;31m[Kkubectl[m[K
+ 1509  sudo vim /etc/profile.d/docker_[01;31m[Kkubectl[m[K_path.sh
+ 1510  sudo cat /etc/profile.d/docker_[01;31m[Kkubectl[m[K_path.sh
+ 1548  [01;31m[Kkubectl[m[K get pods
+ 1564  [01;31m[Kkubectl[m[K get pods
+ 1565  [01;31m[Kkubectl[m[K delete pods nginx
+ 1566  [01;31m[Kkubectl[m[K delete pods minha-app-python-deployment-6579b7dc69-99jpb
+ 1568  [01;31m[Kkubectl[m[K get images
+ 1569  [01;31m[Kkubectl[m[K get image
+ 1571  [01;31m[Kkubectl[m[K get services
+ 1608  [01;31m[Kkubectl[m[K get services
+ 1612  [01;31m[Kkubectl[m[K get services
+ 1653  [01;31m[Kkubectl[m[K get services
+ 1654  [01;31m[Kkubectl[m[K get services -o wide
+ 1659  [01;31m[Kkubectl[m[K get services -o wide
+ 1663  [01;31m[Kkubectl[m[K get deploymet
+ 1664  [01;31m[Kkubectl[m[K get deploymets
+ 1665  [01;31m[Kkubectl[m[K get deployment
+ 1666  [01;31m[Kkubectl[m[K delete deployment minha-app-python-deployment
+ 1667  [01;31m[Kkubectl[m[K get deployment
+ 1668  [01;31m[Kkubectl[m[K delete deployment new-app-deployment
+ 1669  [01;31m[Kkubectl[m[K get deployment
+ 1670  [01;31m[Kkubectl[m[K get service
+ 1671  [01;31m[Kkubectl[m[K delete service --all
+ 1673  [01;31m[Kkubectl[m[K get pods
+ 1763  [01;31m[Kkubectl[m[K get nodes
+ 1770  [01;31m[Kkubectl[m[K get pods
+ 1783  [01;31m[Kkubectl[m[K get service my-nginx --namespace default -o wide
+ 1785  [01;31m[Kkubectl[m[K get service my-nginx --namespace default -o wide
+ 1860  [01;31m[Kkubectl[m[K get nodes
+ 2006  history | grep [01;31m[Kkubectl[m[K
+[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ kubve[K[Kecyt[K[Ktlo [K[K get node[K[K[K[K[K[K [Kt service
+[?2004lNAME              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+backend-service   NodePort    10.43.106.208   <none>        8081:30001/TCP   46h
+kubernetes        ClusterIP   10.43.0.1       <none>        443/TCP          7d22h
+[?2004h]0;marcelomanara@Notenara: ~/Kubernets/Projeto-Pipeline[01;32mmarcelomanara@Notenara[00m:[01;34m~/Kubernets/Projeto-Pipeline[00m$ kubectl get servicehistory | grep kubectlgit push -u origin maincommit -m "Trivy error"
