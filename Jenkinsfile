@@ -37,11 +37,11 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'slack-credentials', variable: 'SLACK_WEBHOOK')]) {
-                        sh """
-                            curl -X POST -H 'Content-type: application/json' \\
-                            --data '{"text":"✅ Deploy finalizado com sucesso no ambiente Kubernetes."}' \\
+                        sh '''
+                            curl -X POST -H 'Content-type: application/json' \
+                            --data '{"text":"✅ Deploy realizado com sucesso!"}' \
                             "$SLACK_WEBHOOK"
-                        """
+                        '''
                     }
                 }
             }
