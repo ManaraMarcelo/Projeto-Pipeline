@@ -47,18 +47,6 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            script {
-                chuckNorris()
-            }
-        }
-        failure {
-            echo '❌ Build falhou. Mas Chuck Norris nunca falha.'
-        }
-    }
-
     triggers {
         githubPush()
     }
