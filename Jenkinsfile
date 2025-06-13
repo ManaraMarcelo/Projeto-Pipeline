@@ -34,21 +34,19 @@ pipeline {
             }
         }
         stage('Notificar no Slack') {
-            environment{
-                SLACK_WEBHOOK = credentials('slack-credentials')
-            }
             steps {
                 script {
-                    sh '''
-                        curl -X POST -H 'Content-type: application/json' \
-                        --data '{"text":"✅ Deploy realizado com sucesso!"}' \
-                        "$SLACK_WEBHOOK"
-                    '''
+                    withCredentials([string(credentialsId: 'slack-credentials', variable: 'SLACK_WEBHOOK')]) {
+                        sh """
+                            curl -X POST -H 'Content-type: application/json' \\
+                            --data '{"text":"✅ Deploy finalizado com sucesso no ambiente Kubernetes."}' \\
+                            "$SLACK_WEBHOOK"
+                        """
+                    }
                 }
             }
         }
     }
-}
 
     post {
         success {
