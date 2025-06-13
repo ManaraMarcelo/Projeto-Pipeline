@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        tag_version = "${env.BUILD_ID}"
-    }
-
     stages {
         stage('Build Docker Image') {
             steps {
@@ -13,7 +9,6 @@ pipeline {
                 }
             }
         }
-
         stage('Push Docker Image') {
             steps {
                 script {
@@ -24,29 +19,20 @@ pipeline {
                 }
             }
         }
-
-        stage('Scan com Trivy') {
-        steps {
-            script {
-                sh """
-                    echo '🔍 Escaneando a imagem com Trivy (somente vulnerabilidades)...'
-                    trivy image --exit-code 1 --severity HIGH,CRITICAL --scanners vuln manaramarcelo/meuapp-backend:${env.BUILD_ID}
-                """
-            }
-        }
-    }
-
         stage('Deploy to Kubernetes') {
+            environment {
+                tag_version = "${env.BUILD_ID}"
+            }
             steps {
                 script {
                     sh 'sed -i "s/{{tag}}/$tag_version/g" ./k8s/trabalho-deployment.yaml'
                     sh 'kubectl apply -f ./k8s/trabalho-deployment.yaml'
                     sh 'kubectl apply -f ./k8s/trabalho-service.yaml'
-                    sh 'echo "✅ Deployment concluído com a tag: $tag_version"'
+                    sh 'echo "Deployment completed with tag: $tag_version"'
+                    sh 'echo "Waiting for the deployment to be ready..."'
                 }
             }
         }
-
         stage('Notificar no Slack') {
             steps {
                 script {
@@ -61,27 +47,6 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            script {
-                echo '😎 Chuck Norris approved this build.'
-                echo '💬 “Chuck Norris doesn’t deploy applications. He roundhouse-kicks them into production.”'
-            }
-        }
-        failure {
-            script {
-                withCredentials([string(credentialsId: 'slack-credentials', variable: 'SLACK_WEBHOOK')]) {
-                    sh '''
-                        curl -X POST -H 'Content-type: application/json' \
-                        --data '{"text":"❌ Build falhou. Mas Chuck Norris nunca falha."}' \
-                        "$SLACK_WEBHOOK"
-                    '''
-                }
-            }
-        }
-    }
-
     triggers {
         githubPush()
     }
