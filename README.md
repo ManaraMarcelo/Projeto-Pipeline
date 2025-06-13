@@ -366,7 +366,7 @@ Exemplo: [http://localhost:30001](http://localhost:30001)
 
 - ✅ Observe as **notificações no Slack**.
 
-![notificacao](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/Imgs/notify.png
+![notificacao](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/Imgs/notify.png)
 ---
 
 ## ✅ Conclusão
