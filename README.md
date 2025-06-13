@@ -149,3 +149,103 @@ Configure o **Firewall do Windows** para permitir tráfego na porta utilizada pe
 
 ---
 
+## 7️⃣ Fase 4: Jenkins - Build e Push
+
+Nesta fase, criamos a pipeline Jenkins para automatizar o build e o push da imagem Docker da aplicação.
+
+### 7.1. Criação da Nova Pipeline no Jenkins
+
+1. Acesse o Jenkins via [http://localhost:8080](http://localhost:8080).
+2. Clique em **"Novo Item"**, nomeie como `fastapi-cicd-pipeline`, selecione **"Pipeline"** e clique em **"OK"**.
+3. Configure como:
+   - **Definition**: Pipeline script from SCM.
+   - **SCM**: Git.
+   - **URL do Repositório**: Insira a URL HTTPS do seu repositório GitHub.
+   - **Branches to build**: `*/dev`
+   - **Script Path**: `Jenkinsfile` (deve estar na raiz do repositório).
+
+🔗 [Jenkinsfile](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/Jenkinsfile)
+
+### 7.2. Jenkinsfile (Build e Push Stages)
+
+O `Jenkinsfile` contém os estágios principais para:
+
+- **Checkout do repositório**
+- **Build da imagem Docker**
+- **Push da imagem para o Docker Hub**
+
+### 7.3. Automação com Webhook (Git Push Trigger)
+
+Para que a pipeline seja executada automaticamente a cada push na branch `dev`:
+
+#### No Jenkins:
+- Vá até o job `fastapi-cicd-pipeline`.
+- Clique em **"Configurar"** > "Acionadores de Build".
+- Marque a opção **"GitHub hook trigger for GITScm polling"**.
+
+#### No GitHub:
+1. Acesse **Settings** do seu repositório.
+2. Vá até **Webhooks** > **"Add webhook"**.
+3. Configure:
+   - **Payload URL**: `https://<SEU_URL_NGROK>/github-webhook/`
+   - **Content type**: `application/json`
+   - **Which events**: *Just the push event*
+4. Clique em **"Add webhook"**.
+
+⚠️ Certifique-se de que o **ngrok** esteja rodando com `ngrok http 8080`.
+
+#### Teste:
+Realize um `git push` para a branch `dev`. Acesse o Jenkins e verifique se a pipeline foi acionada automaticamente.
+
+---
+
+# 8️⃣ Fase 5: Jenkins - Deploy no Kubernetes
+
+Nesta fase, a pipeline Jenkins é estendida para realizar o deploy da aplicação diretamente no Kubernetes.
+
+---
+
+## 8.1. Acesso do Jenkins ao `kubectl`
+
+Para que o Jenkins consiga aplicar manifestos no Kubernetes:
+
+- ✅ Certifique-se de que o `kubectl` está disponível no `PATH` do usuário Jenkins.
+- ✅ O arquivo `kubeconfig` do Rancher Desktop foi copiado para `/var/lib/jenkins/.kube/config` com as permissões corretas.
+- ✅ Crie uma credencial do tipo **"Texto Secreto"** no Jenkins com o conteúdo do `kubeconfig`.
+  - ID da credencial: `kubeconfig`
+
+---
+
+## 8.2. Atualização do Jenkinsfile (Stage de Deploy)
+
+Um novo **stage de deploy** é adicionado ao `Jenkinsfile`, utilizando o `kubectl` para aplicar os manifestos Kubernetes.
+
+🔗 [Ver Jenkinsfile com Deploy no GitHub](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/Jenkinsfile)
+
+Esse novo estágio faz:
+- Substituição da **tag da imagem** no arquivo `backend-deployment.yaml`
+- Aplicação dos arquivos de `Deployment` e `Service`
+- Verificação do rollout do deployment (com timeout de 5 minutos)
+
+📁 [Ver arquivos YAML no GitHub](https://github.com/ManaraMarcelo/Projeto-Pipeline/tree/main/k8s)
+
+---
+
+## 8.3. Teste da Pipeline e Estratégia de Branches
+
+### ✅ Teste na Branch `dev`:
+- Faça um `git push` para a branch `dev`.
+- A pipeline será executada:
+  - Build da imagem
+  - Push para Docker Hub
+  - Deploy para o Kubernetes
+
+### 🚀 Deploy em Produção (`main`):
+Após validação na `dev`, realize o merge com a branch `main`:
+
+```bash
+git checkout main
+git merge dev
+git push origin main
+
+
