@@ -102,7 +102,7 @@ Nesta fase, o backend (FastAPI) é empacotado em uma imagem Docker e publicado. 
 
 No diretório `src/backend/`, crie o arquivo `Dockerfile`.
 
-Você pode visualizar o conteúdo completo do Dockerfile [aqui no GitHub](https://github.com/seu-usuario/seu-repositorio/blob/main/src/backend/Dockerfile).
+Você pode visualizar o conteúdo completo do Dockerfile [Dockerfile](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/src/Dockerfile).
 
 ### 5.2. Teste Local (Build e Execução)
 
@@ -120,7 +120,32 @@ O Dockerfile e o código da aplicação são versionados no GitHub.
 
 ---
 
-#### Entregáveis da Fase 2:
+## 6️⃣ Fase 3: Arquivos de Deploy no Kubernetes
 
-- Dockerfile funcional para o backend (incluindo frontend estático).
-- Imagem Docker da aplicação testada localmente.
+Nesta fase, definimos como a aplicação será implantada no cluster Kubernetes local.
+
+### 6.1. Criação dos YAMLs de Deployment e Service
+
+Crie a pasta `k8s/` na raiz do seu repositório para organizar os manifestos do Kubernetes.
+
+Os arquivos criados são:
+
+- `k8s/backend-deployment.yaml`
+- `k8s/backend-service.yaml`
+
+Você pode visualizar ambos os arquivos diretamente no GitHub:
+
+📁 [Ver arquivos de deploy no Kubernetes (pasta k8s/)](https://github.com/ManaraMarcelo/Projeto-Pipeline/tree/main/k8s)
+
+### 6.2. Aplicação Manual e Validação no Kubernetes
+
+Para aplicar os manifestos, utilize os comandos `kubectl apply` apontando para os arquivos YAML.
+
+Após a aplicação, verifique o status dos pods e serviços com os comandos `kubectl get pods` e `kubectl get service`.
+
+#### 🔥 Dica de Segurança: 
+
+Configure o **Firewall do Windows** para permitir tráfego na porta utilizada pelo `NodePort` (ex: 30001), garantindo o acesso à aplicação via `http://localhost:30001`.
+
+---
+
