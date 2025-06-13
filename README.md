@@ -57,6 +57,70 @@ projeto-pipeline/
 │   └── backend-service.yaml    # Renomeado para consistência  
 └── Jenkinsfile  
 
+---
 
+## 4️⃣ Fase 1: Preparação do Projeto
+Nesta fase, o ambiente de desenvolvimento e os repositórios são preparados.
 
+### 4.1. Repositório GitHub
+* Criação de um **novo repositório** no GitHub (e.g., `Projeto-Pipeline`).
+* Configuração de branches:
+    * `dev`: Branch principal de desenvolvimento. Todas as novas funcionalidades e testes iniciais são feitos aqui.
+    * `main` (ou `master`): Branch de produção. Recebe código apenas após validação completa na `dev`.
+* **Link do Repositório:** `https://github.com/ManaraMarcelo/Projeto-Pipeline.git`
 
+### 4.2. Conta no Docker Hub
+* Criação de conta no Docker Hub para armazenar as imagens da aplicação.
+* **Usuário Docker Hub:** `manaramarcelo`
+
+### 4.3. Acesso ao Cluster Kubernetes Local
+* Verificação do funcionamento do Rancher Desktop (ou alternativa) e do acesso ao cluster Kubernetes via `kubectl`.
+    ```bash
+    kubectl get nodes
+    ```
+
+### 4.4. Validação da Aplicação Local (Backend FastAPI)
+* Instalação de dependências Python (`fastapi`, `uvicorn`, `httpx`, `pydantic`) e execução local do `main.py`.
+    ```bash
+    cd <SEU_REPOSITORIO_LOCAL>/src/backend/
+    pip install -r requirements.txt
+    uvicorn main:app --host 0.0.0.0 --port 8000
+    ```
+* Acesso no navegador: `http://localhost:8000`.
+
+**Conteúdo de `src/backend/requirements.txt`: [requeriments.txt](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/src/requirements.txt)**
+
+**Conteúdo de `src/backend/main.py`: [main.py](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/src/main.py)**
+
+**Conteúdo de `src/frontend/index.html`: [index.html](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/src/frontend/index.html)**
+
+## 5️⃣ Fase 2: Conteinerização com Docker
+
+Nesta fase, o backend (FastAPI) é empacotado em uma imagem Docker e publicado. O frontend será empacotado junto ao backend nesta etapa.
+
+### 5.1. Criação do Dockerfile (Backend com Frontend Estático)
+
+No diretório `src/backend/`, crie o arquivo `Dockerfile`.
+
+Você pode visualizar o conteúdo completo do Dockerfile [aqui no GitHub](https://github.com/seu-usuario/seu-repositorio/blob/main/src/backend/Dockerfile).
+
+### 5.2. Teste Local (Build e Execução)
+
+No diretório `src/backend/`, execute os comandos para construir a imagem e rodar o contêiner localmente.
+
+Acesse a aplicação via navegador em [http://localhost:8000](http://localhost:8000). Se funcionar, o contêiner está ok.
+
+### 5.3. Publicação no Docker Hub
+
+A imagem construída será publicada no Docker Hub através da pipeline Jenkins (Fase 4).
+
+### 5.4. Versionamento
+
+O Dockerfile e o código da aplicação são versionados no GitHub.
+
+---
+
+#### Entregáveis da Fase 2:
+
+- Dockerfile funcional para o backend (incluindo frontend estático).
+- Imagem Docker da aplicação testada localmente.
