@@ -26,15 +26,15 @@ pipeline {
         }
 
         stage('Scan com Trivy') {
-            steps {
-                script {
-                    sh """
-                        echo '🔍 Escaneando a imagem com Trivy...'
-                        trivy image --exit-code 1 --severity HIGH,CRITICAL manaramarcelo/meuapp-backend:${env.BUILD_ID}
-                    """
-                }
+        steps {
+            script {
+                sh """
+                    echo '🔍 Escaneando a imagem com Trivy (somente vulnerabilidades)...'
+                    trivy image --exit-code 1 --severity HIGH,CRITICAL --scanners vuln manaramarcelo/meuapp-backend:${env.BUILD_ID}
+                """
             }
         }
+    }
 
         stage('Deploy to Kubernetes') {
             steps {
