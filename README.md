@@ -360,9 +360,9 @@ Exemplo: [http://localhost:30001](http://localhost:30001)
 
 - ✅ Confirme se o **frontend** está sendo servido corretamente.
 
-![IMG]()
+![IMG](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/Imgs/inicial.png)
 ...
-![IMG]()
+![IMG](https://github.com/ManaraMarcelo/Projeto-Pipeline/blob/main/Imgs/gato.png)
 
 - ✅ Observe as **notificações no Slack**.
 
