@@ -366,6 +366,7 @@ Exemplo: [http://localhost:30001](http://localhost:30001)
 
 - ✅ Observe as **notificações no Slack**.
 
+![notificacao]()
 
 ---
 
