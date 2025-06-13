@@ -87,10 +87,9 @@ pipeline {
                             slackMessage = "⚠️ Pipeline FINALIZADA com AVISOS de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME}!\nForam encontradas vulnerabilidades HIGH/CRITICAL na imagem Docker. Analise o log do Jenkins para mais detalhes: ${env.BUILD_URL}"
                         } else if (env.CRITICAL_VULNERABILITIES_FOUND == "false") {
                             slackMessage = "✅ Pipeline FINALIZADA com SUCESSO para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME}!\nSem vulnerabilidades HIGH/CRITICAL detectadas. Aplicação implantada no Kubernetes: ${env.BUILD_URL}"
-                        } else { # Caso Trivy tenha dado erro na execução
+                        } else { 
                             slackMessage = "❌ Pipeline FINALIZADA com ERRO no SCAN de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME}!\nErro ao executar o Trivy. Analise o log do Jenkins: ${env.BUILD_URL}"
                         }
-
                         // Comando curl usando a variável interpolada e a mensagem condicional
                         sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${slackMessage}\"}' \"${SLACK_WEBHOOK}\""
                     }
