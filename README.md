@@ -199,13 +199,13 @@ Realize um `git push` para a branch `dev`. Acesse o Jenkins e verifique se a pip
 
 ---
 
-# 8️⃣ Fase 5: Jenkins - Deploy no Kubernetes
+## 8️⃣ Fase 5: Jenkins - Deploy no Kubernetes
 
 Nesta fase, a pipeline Jenkins é estendida para realizar o deploy da aplicação diretamente no Kubernetes.
 
 ---
 
-## 8.1. Acesso do Jenkins ao `kubectl`
+### 8.1. Acesso do Jenkins ao `kubectl`
 
 Para que o Jenkins consiga aplicar manifestos no Kubernetes:
 
@@ -216,7 +216,7 @@ Para que o Jenkins consiga aplicar manifestos no Kubernetes:
 
 ---
 
-## 8.2. Atualização do Jenkinsfile (Stage de Deploy)
+### 8.2. Atualização do Jenkinsfile (Stage de Deploy)
 
 Um novo **stage de deploy** é adicionado ao `Jenkinsfile`, utilizando o `kubectl` para aplicar os manifestos Kubernetes.
 
@@ -231,21 +231,160 @@ Esse novo estágio faz:
 
 ---
 
-## 8.3. Teste da Pipeline e Estratégia de Branches
+### 8.3. Teste da Pipeline e Estratégia de Branches
 
-### ✅ Teste na Branch `dev`:
+#### ✅ Teste na Branch `dev`:
 - Faça um `git push` para a branch `dev`.
 - A pipeline será executada:
   - Build da imagem
   - Push para Docker Hub
   - Deploy para o Kubernetes
 
-### 🚀 Deploy em Produção (`main`):
+#### 🚀 Deploy em Produção (`main`):
 Após validação na `dev`, realize o merge com a branch `main`:
 
 ```bash
 git checkout main
 git merge dev
 git push origin main
+```
+
+## 9️⃣ Fase 6: Documentação
+
+**Entregáveis:** `README.md` completo com todos os passos.
+
+---
+
+### 9.1. Criação/Atualização do README.md
+
+Este próprio documento é um exemplo de `README.md` que você pode usar e adaptar.
+
+---
+
+## 🔟 Desafios Extras
+
+Após ter a pipeline básica funcionando, você pode começar a integrar esses recursos para aprimorar seu projeto:
+
+---
+
+### 10.1. Scan de Vulnerabilidades com Trivy
+
+**Instale Trivy e jq no seu WSL (agente Jenkins):**
+
+```bash
+sudo apt-get update
+sudo apt-get install -y trivy jq
+```
+
+Adicione um stage Scan de Vulnerabilidades no Jenkinsfile (após o Push Docker Image):
+
+```bash
+stage('Scan de Vulnerabilidades') {
+    steps {
+        script {
+            echo "🔍 Escaneando a imagem com Trivy (somente vulnerabilidades HIGH e CRITICAL)..."
+
+            env.CRITICAL_VULNERABILITIES_FOUND = "false"
+            env.TRIVY_REPORT = ""
+
+            try {
+                def trivyResult = sh(
+                    script: "trivy image --severity HIGH,CRITICAL --format json manaramarcelo/meuapp-backend:${env.BUILD_ID} | tee trivy-report.json || true",
+                    returnStdout: true,
+                    returnStatus: true
+                )
+
+                env.TRIVY_REPORT = trivyResult.stdout
+
+                if (trivyResult.status == 1) {
+                    env.CRITICAL_VULNERABILITIES_FOUND = "true"
+                    echo "⚠️ Trivy encontrou vulnerabilidades HIGH/CRITICAL. Verifique o log."
+                } else if (trivyResult.status == 0) {
+                    echo "✅ Nenhuma vulnerabilidade HIGH/CRITICAL encontrada pelo Trivy."
+                } else {
+                    echo "❌ Erro inesperado na execução do Trivy (código: ${trivyResult.status}). Analise o log."
+                    env.CRITICAL_VULNERABILITIES_FOUND = "error"
+                }
+            } catch (err) {
+                echo "❌ Erro CRÍTICO ao executar o Trivy/jq: ${err}"
+                env.CRITICAL_VULNERABILITIES_FOUND = "error"
+            }
+        }
+    }
+}
+```
+
+### 10.2. Webhook com Slack ou Discord para Notificações (Já Abordado)
+Você já implementou isso no stage Notificar no Slack. O código abaixo usa o resultado do Trivy:
+
+Substitua o stage Notificar no Slack existente:
+
+```bash
+stage('Notificar no Slack') {
+    steps {
+        withCredentials([string(credentialsId: 'slack-credentials', variable: 'SLACK_WEBHOOK')]) {
+            script {
+                def slackMessage = ""
+
+                if (env.CRITICAL_VULNERABILITIES_FOUND == "true") {
+                    slackMessage = "⚠️ Pipeline FINALIZADA com AVISOS de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME ?: 'main'}!\nForam encontradas vulnerabilidades HIGH/CRITICAL na imagem Docker. Analise o log do Jenkins para mais detalhes: ${env.BUILD_URL}"
+                } else if (env.CRITICAL_VULNERABILITIES_FOUND == "false") {
+                    slackMessage = "✅ Pipeline FINALIZADA com SUCESSO para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME ?: 'main'}!\nSem vulnerabilidades HIGH/CRITICAL detectadas. Aplicação implantada no Kubernetes: ${env.BUILD_URL}"
+                } else {
+                    slackMessage = "❌ Pipeline FINALIZADA com ERRO no SCAN de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME ?: 'main'}!\nErro ao executar o Trivy. Analise o log do Jenkins: ${env.BUILD_URL}"
+                }
+
+                sh """
+                    curl -X POST -H 'Content-type: application/json' \
+                    --data '{"text":"${slackMessage}"}' \
+                    "${SLACK_WEBHOOK}"
+                """
+            }
+        }
+    }
+}
+```
+
+## 1️⃣1️⃣ Teste Final da Aplicação
+
+Acesse a aplicação no navegador via:  
+[http://localhost:<NodePort_alocada_pelo_K8s>](http://localhost:<NodePort_alocada_pelo_K8s>)  
+Exemplo: [http://localhost:30001](http://localhost:30001)
+
+### Verificações:
+
+- ✅ Verifique a funcionalidade dos endpoints do **FastAPI**:
+  - `/color`
+  - `/cat`
+  - *outros endpoints disponíveis*
+
+- ✅ Confirme se o **frontend** está sendo servido corretamente.
+
+![IMG]()
+...
+![IMG]()
+
+- ✅ Observe as **notificações no Slack**.
 
 
+---
+
+## ✅ Conclusão
+
+Este projeto demonstra uma **pipeline de CI/CD robusta e automatizada** para aplicações conteinerizadas.  
+Ele cobre desde o desenvolvimento do código até a implantação em **Kubernetes**, integrando ferramentas essenciais do ecossistema **DevOps**.
+
+O fluxo automatizado garante entregas:
+
+- 🔁 **Mais rápidas**
+- ✅ **Confiáveis**
+- 📈 **Com maior qualidade**
+
+> 🛡️ **Minimizando erros manuais.**
+
+---
+
+## 🔗 Contato
+
+📧 **Email:** [zmarcelo2018@gmail.com](mailto:zmarcelo2018@gmail.com)  
+💡 *Sugestões e melhorias são sempre bem-vindas!*
