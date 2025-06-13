@@ -33,15 +33,17 @@ pipeline {
                 }
             }
         }
-        stage('Notificar no Slack') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'slack-credentials', variable: 'SLACK_WEBHOOK')]) {
-                        sh """
-                            curl -X POST -H 'Content-type: application/json' \\
-                            --data '{"text":"✅ Deploy finalizado com sucesso no ambiente Kubernetes."}' \\
-                            "$SLACK_WEBHOOK"
-                        """
+        stages {
+            stage('Notificar no Slack') {
+                steps {
+                    script {
+                        withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_WEBHOOK')]) {
+                            sh '''
+                                curl -X POST -H 'Content-type: application/json' \
+                                --data '{"text":"✅ Deploy finalizado com sucesso no ambiente Kubernetes."}' \
+                                "$SLACK_WEBHOOK"
+                            '''
+                        }
                     }
                 }
             }
