@@ -23,43 +23,37 @@ pipeline {
             steps {
                 script {
                     echo "🔍 Escaneando a imagem com Trivy (somente vulnerabilidades HIGH e CRITICAL)..."
-                    
-                    // Define uma variável para armazenar o status da varredura
-                    // Por padrão, assumimos que não há vulnerabilidades críticas
+
                     env.CRITICAL_VULNERABILITIES_FOUND = "false"
-                    env.TRIVY_REPORT = ""
+                    env.TRIVY_REPORT = "" // Inicializa a variável para o relatório
 
                     try {
-                        // Roda o Trivy.
-                        // 'set +e' garante que o script continue mesmo se o Trivy retornar erro (exit code 1)
-                        // '|| true' também garante que o comando não cause uma falha de pipeline se trivy retornar exit code 1
-                        def trivyOutput = sh(
-                            script: "trivy image --severity HIGH,CRITICAL --format json manaramarcelo/meuapp-backend:${env.BUILD_ID} | tee trivy-report.json",
+                        // Captura a saída e o status. A flag 'returnStatus: true' permite verificar o status do comando.
+                        // A flag 'returnStdout: true' captura a saída.
+                        // O '|| true' no script garante que o comando não cause uma exceção Groovy,
+                        // mas ainda permite que 'returnStatus' capture o código de saída real do Trivy.
+                        def trivyResult = sh(
+                            script: "trivy image --severity HIGH,CRITICAL --format json manaramarcelo/meuapp-backend:${env.BUILD_ID} | tee trivy-report.json || true",
                             returnStdout: true,
                             returnStatus: true
                         )
 
-                        env.TRIVY_REPORT = trivyOutput.stdout
+                        env.TRIVY_REPORT = trivyResult.stdout // Atribui a saída para a variável de ambiente
 
-                        // Analisa o JSON do Trivy para verificar se há vulnerabilidades HIGH ou CRITICAL
-                        // Se o 'jq' não estiver instalado no seu agente Jenkins, você precisará instalá-lo:
-                        // sudo apt-get install -y jq
-                        def highCriticalCount = sh(
-                            script: "jq '.Vulnerabilities[] | select(.Severity == \"HIGH\" or .Severity == \"CRITICAL\") | length' trivy-report.json | wc -l",
-                            returnStdout: true
-                        ).trim()
-
-                        if (highCriticalCount.toInteger() > 0) {
+                        // Verifica o status do Trivy para determinar se encontrou vulnerabilidades (0 = sem high/critical, 1 = com high/critical)
+                        if (trivyResult.status == 1) { // Se o Trivy saiu com 1, significa que encontrou HIGH/CRITICAL
                             env.CRITICAL_VULNERABILITIES_FOUND = "true"
-                            echo "⚠️ Trivy encontrou ${highCriticalCount} vulnerabilidades HIGH/CRITICAL. Verifique o log."
-                        } else {
+                            echo "⚠️ Trivy encontrou vulnerabilidades HIGH/CRITICAL. Verifique o log."
+                        } else if (trivyResult.status == 0) {
                             echo "✅ Nenhuma vulnerabilidade HIGH/CRITICAL encontrada pelo Trivy."
+                        } else { // Outros códigos de erro do Trivy (ex: Trivy não encontrado, etc.)
+                            echo "❌ Erro inesperado na execução do Trivy (código: ${trivyResult.status}). Analise o log."
+                            env.CRITICAL_VULNERABILITIES_FOUND = "error"
                         }
-
                     } catch (err) {
-                        // Em caso de erro na execução do Trivy (não de vulnerabilidade, mas erro de comando)
-                        echo "❌ Erro ao executar o Trivy: ${err}"
-                        env.CRITICAL_VULNERABILITIES_FOUND = "error" // Indicador de erro na execução do scanner
+                        // Captura erros se o comando 'sh' em si falhar (ex: trivy ou jq não instalados)
+                        echo "❌ Erro CRÍTICO ao executar o Trivy/jq: ${err}"
+                        env.CRITICAL_VULNERABILITIES_FOUND = "error"
                     }
                 }
             }
@@ -84,16 +78,21 @@ pipeline {
                     script {
                         def slackMessage = ""
                         if (env.CRITICAL_VULNERABILITIES_FOUND == "true") {
-                            slackMessage = "⚠️ Pipeline FINALIZADA com AVISOS de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME}!\nForam encontradas vulnerabilidades HIGH/CRITICAL na imagem Docker. Analise o log do Jenkins para mais detalhes: ${env.BUILD_URL}"
+                            slackMessage = "⚠️ Pipeline FINALIZADA com AVISOS de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME ?: 'main'}!\nForam encontradas vulnerabilidades HIGH/CRITICAL na imagem Docker. Analise o log do Jenkins para mais detalhes: ${env.BUILD_URL}"
                         } else if (env.CRITICAL_VULNERABILITIES_FOUND == "false") {
-                            slackMessage = "✅ Pipeline FINALIZADA com SUCESSO para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME}!\nSem vulnerabilidades HIGH/CRITICAL detectadas. Aplicação implantada no Kubernetes: ${env.BUILD_URL}"
-                        } else { 
-                            slackMessage = "❌ Pipeline FINALIZADA com ERRO no SCAN de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME}!\nErro ao executar o Trivy. Analise o log do Jenkins: ${env.BUILD_URL}"
+                            slackMessage = "✅ Pipeline FINALIZADA com SUCESSO para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME ?: 'main'}!\nSem vulnerabilidades HIGH/CRITICAL detectadas. Aplicação implantada no Kubernetes: ${env.BUILD_URL}"
+                        } else {
+                            slackMessage = "❌ Pipeline FINALIZADA com ERRO no SCAN de SEGURANÇA para a build ${env.BUILD_ID} na branch ${env.BRANCH_NAME ?: 'main'}!\nErro ao executar o Trivy. Analise o log do Jenkins: ${env.BUILD_URL}"
                         }
-                        // Comando curl usando a variável interpolada e a mensagem condicional
+
                         sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${slackMessage}\"}' \"${SLACK_WEBHOOK}\""
                     }
                 }
+            }
+        }
+        stage('Declarative: Post Actions') {
+            steps {
+                echo "Build finalizado. Estado: ${currentBuild.result}"
             }
         }
     }
